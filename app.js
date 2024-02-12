@@ -7,16 +7,13 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
-// Body parser middleware to parse request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
 
-// Sanitizer middleware to sanitize request bodies
 app.use(expressSanitizer());
 
-// MySQL connection
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -57,16 +54,12 @@ app.get('/get-all-content', (req, res) => {
   });
 });
 
-// POST route to receive WYSIWYG content
 app.post('/save-content', (req, res) => {
-  // Assuming body-parser middleware is used to parse JSON bodies
   const { path, content } = req.body;
 
-  // Sanitize the content and path to prevent XSS attacks
   const sanitizedContent = req.sanitize(content);
   const sanitizedPath = req.sanitize(path);
 
-  // SQL query to insert sanitized path and content into the database
   const query = 'INSERT INTO content_entries (path, content) VALUES (?, ?)';
 
   connection.query(query, [sanitizedPath, sanitizedContent], (err, result) => {
